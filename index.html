@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DemoREST</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"
+        integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+</head>
+
+<body>
+    <div class="container" ng-app="myApp" ng-controller="myCtrl">
+        <p></p>
+        <div class="jumbotron">
+            <h1 class="display-4">Get your tasks done!</h1>
+            <p class="lead">Below are some tasks. Add or delete as you wish...</p>
+            <hr class="my-4">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Add a new task here"
+                    aria-label="Add a new task here" aria-describedby="button-addon2" ng-model="newTask">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="button-addon2"
+                        ng-click="addTask()">Add</button>
+                </div>
+            </div>
+            <ul class="list-group">
+                <li class="list-group-item" style="display: flex; justify-content: space-between; align-items: center"
+                    ng-repeat="task in tasks">
+                    {{task.task}} <i class="fas fa-trash-alt" style="cursor: pointer;" ng-click="delete(task.id)"></i>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', function ($scope, $http) {
+            $http.get("http://localhost:3000/tasks")
+                .then(function (response) {
+                    $scope.tasks = response.data;
+                });
+            $scope.newTask = '';
+            $scope.addTask = () => {
+                $http.post(`http://localhost:3000/tasks`, {
+                        task: $scope.newTask
+                    })
+                    .then(function (response) {
+                        $scope.tasks = response.data;
+                        $scope.newTask = '';
+                    });
+            }
+            $scope.delete = (id) => {
+                $http.delete(`http://localhost:3000/tasks/${id}`)
+                    .then(function (response) {
+                        $scope.tasks = response.data;
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
