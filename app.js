@@ -2,17 +2,19 @@ const
     express = require('express'),
     cors = require('cors'),
     bodyParser = require('body-parser'),
-    mysql = require('mysql'),
-    conn = mysql.createConnection({
-        host: 'localhost',
-        port: '3309',
-        user: 'cs_aurora_user',
-        password: 'csaurorapassword'
-    });
+    mysql = require('mysql');
 
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+require('dotenv').config();
+
+const conn = mysql.createConnection({
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT ? process.env.DB_PORT : '3306',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS
+});
 
 conn.connect(err => {
     if (err) throw err;
